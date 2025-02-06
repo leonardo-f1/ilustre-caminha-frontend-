@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ilustre Caminha</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <style>
+        :root {
+            --navbar-height: 60px;
+            --logo-height: 50px;
+            --nav-link-margin: 15px;
+            --nav-link-font-size: 1rem;
+        }
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+        .navbar {
+            background-color: #8B0000;
+            height: var(--navbar-height);
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .navbar-brand {
+            margin-right: auto;
+        }
+        .navbar-brand img {
+            max-height: var(--logo-height);
+        }
+        .navbar-nav {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .navbar-nav .nav-item {
+            margin: 0 var(--nav-link-margin);
+        }
+        .navbar-nav .nav-link {
+            color: #fac267;
+            font-weight: bold;
+            font-size: var(--nav-link-font-size);
+        }
+        .navbar-nav .nav-link:hover {
+            color: #fff;
+        }
+        .navbar-icons {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background-color: #fac267;
+            height: var(--navbar-height);
+            padding: 0 20px;
+        }
+        .navbar-icons i {
+            color: #000;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .navbar-icons i:hover {
+            color: #8B0000;
+            transform: scale(1.1);
+        }
+        .side-menu {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 100%;
+            background-color: #fac267;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(100%);
+            z-index: 1050;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow-y: auto;
+        }
+        .side-menu.active {
+            transform: translateX(0);
+        }
+        .side-menu .close-btn {
+            font-size: 1.5rem;
+            color: #8B0000;
+            cursor: pointer;
+            align-self: flex-end;
+        }
+        .side-menu .menu-item {
+            margin: 20px 0;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #8B0000;
+            text-decoration: none;
+            display: block;
+        }
+        .side-menu .menu-item:hover {
+            color: #500000;
+        }
+        .side-menu .icons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 2px solid #8B0000;
+        }
+        .side-menu .icons i {
+            font-size: 1.5rem;
+            color: #8B0000;
+            cursor: pointer;
+        }
+        .side-menu .icons i:hover {
+            color: #500000;
+        }
+        .classification-section {
+            padding: 20px;
+            text-align: center;
+        }
+        .classification-table {
+            width: 100%;
+            max-width: 900px;
+            margin: 20px auto;
+            background-color: #8B0000;
+            color: #FAC267;
+            border-collapse: collapse;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        .classification-table th, .classification-table td {
+            padding: 10px;
+            border-bottom: 1px solid #FAC267;
+        }
+        .classification-table th {
+            background-color: #FAC267;
+            color: #8B0000;
+            font-size: 0.9rem;
+        }
+        .classification-table td {
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        .classification-table .team-column {
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .classification-table .team-logo {
+            width: 30px;
+            height: 30px;
+            object-fit: contain;
+        }
+        .classification-table tr:nth-child(odd) {
+            background-color: #500000;
+        }
+        .classification-table tr:nth-child(even) {
+            background-color: #8B0000;
+        }
+        .login-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fac267;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            display: none;
+            z-index: 2000;
+        }
+        .login-modal.active {
+            display: block;
+        }
+        .login-modal h3 {
+            color: #8B0000;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .login-modal input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #8B0000;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        .login-modal button {
+            width: 100%;
+            padding: 10px;
+            background-color: #8B0000;
+            color: #fac267;
+            font-size: 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .login-modal button:hover {
+            background-color: #500000;
+        }
+        .admin-bar {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #FAC267;
+            padding: 10px;
+            text-align: right;
+            z-index: 2000;
+        }
+        .admin-bar.active {
+            display: block;
+        }
+        .admin-bar button {
+            background-color: #8B0000;
+            color: #FAC267;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .admin-bar button:hover {
+            background-color: #500000;
+        }
+        footer {
+            background-color: #8B0000;
+            color: #fff;
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+        .footer-link {
+            color: #FAC267;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .footer-link:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <a class="navbar-brand" href="index.html">
+            <img src="logo.png" alt="Logo">
+        </a>
+        <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link" href="#">Ilustre Caminha</a></li>
+        </ul>
+        <div class="navbar-icons">
+            <i class="bi bi-pencil" id="login-toggle"></i>
+            <i class="bi bi-list" id="menu-toggle"></i>
+        </div>
+    </div>
+
+    <!-- Admin Bar -->
+    <div class="admin-bar" id="admin-bar">
+        <span>Modo Administrador Ativado</span>
+        <button id="logout-admin">Sair do Modo Admin</button>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="login-modal" id="login-modal">
+        <h3>Login do Administrador</h3>
+        <form id="login-form">
+            <input type="password" id="password" placeholder="Senha" required>
+            <button type="submit">Entrar</button>
+        </form>
+    </div>
+
+    <!-- Side Menu -->
+    <div class="side-menu" id="side-menu">
+        <span class="close-btn" id="close-menu">&times;</span>
+        <a href="index.html" class="menu-item">Página Principal</a>
+        <a href="Plantel.html" class="menu-item">Equipa</a>
+        <a href="noticias.html" class="menu-item">Noticias</a>
+        <a href="galeria.html" class="menu-item">Galeria de Fotos</a>
+        <div class="icons">
+            <a href="https://www.facebook.com/profile.php?id=61562678592821" target="_blank" rel="noopener noreferrer">
+                <i class="bi bi-facebook"></i>
+            </a>
+            <a href="https://www.instagram.com/ilustrecaminha?igsh=ejg1NTI1aG12dGhp" target="_blank" rel="noopener noreferrer">
+                <i class="bi bi-instagram"></i>
+            </a>
+            <a href="https://www.youtube.com/@ILUSTRECAMINHA" target="_blank" rel="noopener noreferrer">
+                <i class="bi bi-youtube"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Classification Section -->
+    <div class="classification-section">
+        <h2 style="color: #FAC267;">Classificação</h2>
+        <table class="classification-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th class="team-column">Equipa</th>
+                    <th>PTS</th>
+                    <th>J</th>
+                </tr>
+            </thead>
+            <tbody id="classification-body">
+                <tr>
+                    <td>1</td>
+                    <td class="team-column">
+                        <img src="TAVORA.png" alt="Távora" class="team-logo">
+                        Távora
+                    </td>
+                    <td contenteditable="true">41</td>
+                    <td contenteditable="true">17</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td class="team-column">
+                        <img src="CAMINHA.png" alt="At. Caminha" class="team-logo">
+                        At. Caminha
+                    </td>
+                    <td contenteditable="true">40</td>
+                    <td contenteditable="true">17</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td class="team-column">
+                        <img src="FACHENSE.png" alt="AD Fachense" class="team-logo">
+                        AD Fachense
+                    </td>
+                    <td contenteditable="true">38</td>
+                    <td contenteditable="true">17</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td class="team-column">
+                        <img src="LANHELAS.jpg" alt="Lanhelas FC" class="team-logo">
+                        Lanhelas FC
+                    </td>
+                    <td contenteditable="true">36</td>
+                    <td contenteditable="true">17</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td class="team-column">
+                        <img src="ADCAMPOS.png" alt="AD Campos" class="team-logo">
+                        AD Campos
+                    </td>
+                    <td contenteditable="true">35</td>
+                    <td contenteditable="true">16</td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td class="team-column">
+                        <img src="VIANENSEB.png" alt="Vianense B" class="team-logo">
+                        Vianense B
+                    </td>
+                    <td contenteditable="true">35</td>
+                    <td contenteditable="true">17</td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td class="team-column">
+                        <img src="OSTORREENSES.png" alt="Os Torreenses" class="team-logo">
+                        Os Torreenses
+                    </td>
+                    <td contenteditable="true">32</td>
+                    <td contenteditable="true">17</td>
+                </tr>
+                <tr>
+                    <td>8</td>
+                    <td class="team-column">
+                        <img src="PACO.jpg" alt="ARC Paçô" class="team-logo">
+                        ARC Paçô
+                    </td>
+                    <td contenteditable="true">27</td>
+                    <td contenteditable="true">16</td>
+                </tr>
+                <tr>
+                    <td>9</td>
+                    <td class="team-column">
+                        <img src="ADBARROSELAS.png" alt="AD Barroselas" class="team-logo">
+                        AD Barroselas
+                    </td>
+                    <td contenteditable="true">24</td>
+                    <td contenteditable="true">17</td>
+                </tr>
+                <tr>
+                    <td>10</td>
+                    <td class="team-column">
+                        <img src="ADCPERRE.png" alt="ADC Perre" class="team-logo">
+                        ADC Perre
+                    </td>
+                    <td contenteditable="true">23</td>
+                    <td contenteditable="true">17</td>
+                </tr>
+                <tr>
+                    <td>11</td>
+                    <td class="team-column">
+                        <img src="RAIANOS.png" alt="Raianos" class="team-logo">
+                        Raianos
+                    </td>
+                    <td contenteditable="true">23</td>
+                    <td contenteditable="true">16</td>
+                </tr>
+                <tr>
+                    <td>12</td>
+                    <td class="team-column">
+                        <img src="CHAFE.png" alt="AD Chafé" class="team-logo">
+                        AD Chafé
+                    </td>
+                    <td contenteditable="true">22</td>
+                    <td contenteditable="true">17</td>
+                </tr>
+                <tr>
+                    <td>13</td>
+                    <td class="team-column">
+                        <img src="ADCANHA.jpg" alt="ADC Anha" class="team-logo">
+                        ADC Anha
+                    </td>
+                    <td contenteditable="true">16</td>
+                    <td contenteditable="true">17</td>
+                </tr>
+                <tr>
+                    <td>14</td>
+                    <td class="team-column">
+                        <img src="VILAFRANCA.png" alt="FC Vila Franca" class="team-logo">
+                        FC Vila Franca
+                    </td>
+                    <td contenteditable="true">12</td>
+                    <td contenteditable="true">17</td>
+                </tr>
+                <tr>
+                    <td>15</td>
+                    <td class="team-column">
+                        <img src="ANAISFC.png" alt="Anais FC" class="team-logo">
+                        Anais FC
+                    </td>
+                    <td contenteditable="true">11</td>
+                    <td contenteditable="true">16</td>
+                </tr>
+                <tr>
+                    <td>16</td>
+                    <td class="team-column">
+                        <img src="DARQUENSE.png" alt="Darquense" class="team-logo">
+                        Darquense
+                    </td>
+                    <td contenteditable="true">8</td>
+                    <td contenteditable="true">17</td>
+                </tr>
+                <tr>
+                    <td>17</td>
+                    <td class="team-column">
+                        <img src="VALENCIANOB.png" alt="Valenciano B" class="team-logo">
+                        Valenciano B
+                    </td>
+                    <td contenteditable="true">7</td>
+                    <td contenteditable="true">17</td>
+                </tr>
+                <tr>
+                    <td>18</td>
+                    <td class="team-column">
+                        <img src="ILUSTRE.png" alt="Ilustre Caminha" class="team-logo">
+                        Ilustre Caminha
+                    </td>
+                    <td contenteditable="true">3</td>
+                    <td contenteditable="true">17</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Footer com Política de Privacidade -->
+    <footer>
+        <p>&copy; 2025 Ilustre Caminha. Todos os direitos reservados. | 
+           <a href="politica_privacidade.html" class="footer-link">Política de Privacidade</a></p>
+    </footer>
+
+    <script>
+        const adminToggle = document.getElementById('login-toggle');
+        const adminBar = document.getElementById('admin-bar');
+        const logoutAdmin = document.getElementById('logout-admin');
+        const classificationBody = document.getElementById('classification-body');
+        const loginModal = document.getElementById('login-modal');
+        const closeMenu = document.getElementById('close-menu');
+        const sideMenu = document.getElementById('side-menu');
+        const menuToggle = document.getElementById('menu-toggle');
+
+        // Função para salvar a tabela no Local Storage
+        const saveChanges = () => {
+            const rows = document.querySelectorAll('#classification-body tr');
+            const tableData = Array.from(rows).map(row => ({
+                position: row.querySelector('td:first-child').textContent,
+                team: row.querySelector('.team-column').textContent.trim(),
+                points: row.querySelectorAll('td')[2].textContent.trim(),
+                games: row.querySelectorAll('td')[3].textContent.trim()
+            }));
+            localStorage.setItem('classificationTable', JSON.stringify(tableData));
+        };
+
+        // Função para carregar a tabela do Local Storage
+        const loadTableFromStorage = () => {
+            const savedTable = localStorage.getItem('classificationTable');
+            if (savedTable) {
+                const tableData = JSON.parse(savedTable);
+                const tbody = document.getElementById('classification-body');
+                tbody.innerHTML = ''; // Limpa o conteúdo atual
+                tableData.forEach(data => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${data.position}</td>
+                        <td class="team-column"><img src="${data.team.replace(/\s+/g, '').toUpperCase()}.png" alt="${data.team}" class="team-logo"> ${data.team}</td>
+                        <td contenteditable="false">${data.points}</td>
+                        <td contenteditable="false">${data.games}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+        };
+
+        // Ativar edição de conteúdo
+        const enableContentEditable = () => {
+            classificationBody.querySelectorAll('td[contenteditable]').forEach(cell => {
+                cell.setAttribute('contenteditable', 'true');
+            });
+        };
+
+        // Desativar edição de conteúdo
+        const disableContentEditable = () => {
+            classificationBody.querySelectorAll('td[contenteditable]').forEach(cell => {
+                cell.setAttribute('contenteditable', 'false');
+            });
+        };
+
+        // Ativar arrastar e soltar
+        const enableDragAndDrop = () => {
+            new Sortable(classificationBody, {
+                animation: 150,
+                handle: '.team-column',
+                onEnd: updatePositions,
+            });
+        };
+
+        // Atualizar posições após arrastar
+        const updatePositions = () => {
+            const rows = classificationBody.querySelectorAll('tr');
+            rows.forEach((row, index) => {
+                row.querySelector('td:first-child').textContent = index + 1;
+            });
+        };
+
+        // Mostrar modal de login
+        adminToggle.addEventListener('click', () => {
+            loginModal.classList.add('active');
+        });
+
+        // Ocultar modal de login ao clicar fora
+        window.addEventListener('click', (e) => {
+            if (e.target === loginModal) {
+                loginModal.classList.remove('active');
+            }
+        });
+
+        // Lidar com o login
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const password = document.getElementById('password').value;
+            if (password === 'admin123') {
+                loginModal.classList.remove('active');
+                adminBar.classList.add('active');
+                enableContentEditable();
+                enableDragAndDrop();
+                alert('Login bem-sucedido! Modo Administrador Ativado.');
+            } else {
+                alert('Senha incorreta!');
+            }
+        });
+
+        // Sair do modo administrador
+        logoutAdmin.addEventListener('click', () => {
+            saveChanges(); // Salva as alterações antes de sair
+            adminBar.classList.remove('active');
+            disableContentEditable();
+            alert('Você saiu do modo administrador. Alterações salvas!');
+        });
+
+        // Abrir o menu lateral
+        menuToggle.addEventListener('click', () => {
+            sideMenu.classList.add('active');
+        });
+
+        // Fechar o menu lateral ao clicar no botão de fechar
+        closeMenu.addEventListener('click', () => {
+            sideMenu.classList.remove('active');
+        });
+
+        
+
+        // Fechar o menu lateral ao clicar fora
+        document.addEventListener('click', (e) => {
+            const isClickInsideMenu = sideMenu.contains(e.target);
+            const isClickOnMenuToggle = e.target === menuToggle;
+            if (!isClickInsideMenu && !isClickOnMenuToggle && sideMenu.classList.contains('active')) {
+                sideMenu.classList.remove('active');
+            }
+        });
+
+        
+
+        // Carregar tabela ao carregar a página
+        window.onload = () => {
+            loadTableFromStorage(); // Carrega os dados salvos
+            disableContentEditable(); // Desativa a edição por padrão
+        };
+    </script>
+
+    <script src="script.js"></script>
+
+    
+</body>
+</html>

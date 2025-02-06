@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ilustre Caminha</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --navbar-height: 60px;
+            --logo-height: 50px;
+            --nav-link-margin: 15px;
+            --nav-link-font-size: 1rem;
+            --primary-color: #000;
+            --card-bg: #8B0000;
+            --text-color: #ffffff;
+            --title-color: #FAC267;
+            --accent-color: #FAC267;
+        }
+
+        a {
+            text-decoration: none; /* Remove o sublinhado */
+            color: inherit; /* Mantém a cor herdada */
+        }
+
+        a:hover {
+            color: var(--secondary-color); /* Adiciona cor ao passar o mouse */
+        }
+
+        body {
+            background-color: var(--primary-color);
+            font-family: Arial, sans-serif;
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background-color: #8B0000;
+            height: var(--navbar-height);
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .navbar-brand {
+            margin-right: auto;
+        }
+        .navbar-brand img {
+            max-height: var(--logo-height);
+        }
+        .navbar-nav {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .navbar-nav .nav-item {
+            margin: 0 var(--nav-link-margin);
+        }
+        .navbar-nav .nav-link {
+            color: #fac267;
+            font-weight: bold;
+            font-size: var(--nav-link-font-size);
+        }
+        .navbar-nav .nav-link:hover {
+            color: #fff;
+        }
+        .navbar-icons {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background-color: #fac267;
+            height: var(--navbar-height);
+            padding: 0 20px;
+        }
+        .navbar-icons i {
+            color: #000;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        .navbar-icons i:hover {
+            color: #8B0000;
+        }
+
+        .side-menu {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100%;
+            background-color: #fac267;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+            transition: right 0.3s ease;
+            z-index: 1050;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .side-menu.active {
+            right: 0;
+        }
+        .side-menu .close-btn {
+            font-size: 1.5rem;
+            color: #8B0000;
+            cursor: pointer;
+            align-self: flex-end;
+        }
+        .side-menu .menu-item {
+            margin: 20px 0;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #8B0000;
+            text-decoration: none;
+            display: block;
+        }
+        .side-menu .menu-item:hover {
+            color: #500000;
+        }
+        .side-menu .icons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 2px solid #8B0000;
+        }
+        .side-menu .icons i {
+            font-size: 1.5rem;
+            color: #8B0000;
+            cursor: pointer;
+        }
+        .side-menu .icons i:hover {
+            color: #500000;
+        }
+
+        .team-section {
+            padding: 3rem 2rem;
+        }
+
+        .category-title {
+            font-weight: bold;
+            color: var(--title-color);
+            font-size: 1.8rem;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .player-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 2rem;
+            justify-items: center;
+            margin-bottom: 4rem;
+        }
+
+        .player-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            width: 220px;
+            overflow: hidden;
+        }
+
+        .player-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
+        }
+
+        .player-card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 10px;
+            transition: transform 0.3s;
+        }
+
+        .player-card:hover img {
+            transform: scale(1.1);
+        }
+
+        .player-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--text-color);
+            margin-top: 0.5rem;
+        }
+
+        .player-number {
+            font-size: 1rem;
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        footer {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            text-align: center;
+            padding: 1rem;
+        }
+
+        footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <a class="navbar-brand" href="index.html">
+            <img src="logo.png" alt="Logo">
+        </a>
+        <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link" href="#">Ilustre Caminha</a></li>
+        </ul>
+        <div class="navbar-icons">
+            <i class="bi bi-pencil"></i> <!-- Ícone de lápis substituído aqui -->
+            <i class="bi bi-list" id="menu-toggle"></i>
+        </div>
+    </div>
+
+    <!-- Side Menu -->
+    <div class="side-menu" id="side-menu">
+        <span class="close-btn" id="close-menu">&times;</span>
+        <a href="index.html" class="menu-item">Página Principal</a>
+        <a href="noticias.html" class="menu-item">Notícias</a>
+        <a href="classificacao.html" class="menu-item">Classificação</a>
+        <a href="galeria.html" class="menu-item">Galeria de Fotos</a>
+        <div class="icons">
+            <a href="https://www.facebook.com/profile.php?id=61562678592821" target="_blank" rel="noopener noreferrer">
+                <i class="bi bi-facebook"></i>
+            </a>
+            <a href="https://www.instagram.com/ilustrecaminha?igsh=ejg1NTI1aG12dGhp" target="_blank" rel="noopener noreferrer">
+                <i class="bi bi-instagram"></i>
+            </a>
+            <a href="https://www.youtube.com/@ILUSTRECAMINHA" target="_blank" rel="noopener noreferrer">
+                <i class="bi bi-youtube"></i>
+            </a>
+        </div>
+    </div>
+
+    <section class="team-section">
+        <div class="category-section">
+            <div class="category-title">Guarda-Redes</div>
+            <div class="player-grid">
+                <a href="Diogo.html" class="player-card">
+                    <img src="JOGADORES/Diogo.png" alt="Diogo Soto Maior">
+                    <div class="player-name">Diogo Soto Maior</div>
+                    <div class="player-number">#26</div>
+                </a>
+                <a href="Rafael.html" class="player-card">
+                    <img src="JOGADORES/Rafael Lages.png" alt="Rafael Lages">
+                    <div class="player-name">Rafael Lages</div>
+                    <div class="player-number">#1</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="category-section" style="margin-bottom: 6rem;">
+            <div class="category-title">Defesas</div>
+            <div class="player-grid">
+                <a href="Branquinho.html" class="player-card">
+                    <img src="JOGADORES/Branquinho.png" alt="Branquinho">
+                    <div class="player-name">Branquinho</div>
+                    <div class="player-number">#5</div>
+                </a>
+                <a href="Ricardo Coelho.html" class="player-card">
+                    <img src="JOGADORES/Ricardo.png" alt="Ricardo Coelho">
+                    <div class="player-name">Ricardo Coelho</div>
+                    <div class="player-number">#14</div>
+                </a>
+                <a href="Leonardo.html" class="player-card">
+                    <img src="JOGADORES/Leonardo.png" alt="Leonardo Fonseca">
+                    <div class="player-name">Leonardo Fonseca</div>
+                    <div class="player-number">#19</div>
+                </a>
+                <a href="João Guerreiro.html" class="player-card">
+                    <img src="JOGADORES/João Guerreiro.png" alt="João Guerreiro">
+                    <div class="player-name">João Guerreiro</div>
+                    <div class="player-number">#4</div>
+                </a>
+                <a href="Bruno Taborda.html" class="player-card">
+                    <img src="JOGADORES/Taborda.png" alt="Bruno Taborda">
+                    <div class="player-name">Bruno Taborda</div>
+                    <div class="player-number">#18</div>
+                </a>
+                <a href="Gonçalo Maciel.html" class="player-card">
+                    <img src="JOGADORES/Gonçalo Maciel.png" alt="Gonçalo Maciel">
+                    <div class="player-name">Gonçalo Maciel</div>
+                    <div class="player-number">#66</div>
+                </a>
+                <a href="Tiago Fonseca.html" class="player-card">
+                    <img src="JOGADORES/Tiago Fonseca.png" alt="Tiago Fonseca">
+                    <div class="player-name">Tiago Fonseca</div>
+                    <div class="player-number">#3</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="category-section" style="margin-bottom: 6rem;">
+            <div class="category-title">Médios</div>
+            <div class="player-grid">
+                <a href="Ricardinho.html" class="player-card">
+                    <img src="JOGADORES/Ricardinho.png" alt="Ricardinho">
+                    <div class="player-name">Ricardo Viana</div>
+                    <div class="player-number">#6</div>
+                </a>
+                <a href="Xavier Martins.html" class="player-card">
+                    <img src="JOGADORES/Xavier.png" alt="Xavier Martins">
+                    <div class="player-name">Xavier Martins</div>
+                    <div class="player-number">#13</div>
+                </a>
+                <a href="Sissi.html" class="player-card">
+                    <img src="JOGADORES/Sissi.png" alt="Sissi">
+                    <div class="player-name">Sissi</div>
+                    <div class="player-number">#20</div>
+                </a>
+                <a href="André Ribas.html" class="player-card">
+                    <img src="JOGADORES/André Ribas.png" alt="André Ribas">
+                    <div class="player-name">André Ribas</div>
+                    <div class="player-number">#10</div>
+                </a>
+                <a href="Miguel.html" class="player-card">
+                    <img src="JOGADORES/Miguel.png" alt="Miguel Valadares">
+                    <div class="player-name">Miguel Valadares</div>
+                    <div class="player-number">#9</div>
+                </a>
+                <a href="Perike.html" class="player-card">
+                    <img src="JOGADORES/Perike.png" alt="Perike Lourenço">
+                    <div class="player-name">Perike Lourenço</div>
+                    <div class="player-number">#25</div>
+                </a>
+                <a href="André Barbosa.html" class="player-card">
+                    <img src="JOGADORES/André Barbosa.png" alt="André Barbosa">
+                    <div class="player-name">André Barbosa</div>
+                    <div class="player-number">#27</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="category-section">
+            <div class="category-title">Avançados</div>
+            <div class="player-grid">
+                <a href="Miguel Afonso.html" class="player-card">
+                    <img src="JOGADORES/Miguel Afonso.png" alt="Miguel Afonso">
+                    <div class="player-name">Miguel Afonso</div>
+                    <div class="player-number">#17</div>
+                </a>
+                <a href="Marco Ribas.html" class="player-card">
+                    <img src="JOGADORES/Marco.png" alt="Marco Ribas">
+                    <div class="player-name">Marco Ribas</div>
+                    <div class="player-number">#7</div>
+                </a>
+                <a href="Leandro Gonçalves.html" class="player-card">
+                    <img src="JOGADORES/Leandro.png" alt="Leandro Gonçalves">
+                    <div class="player-name">Leandro Gonçalves</div>
+                    <div class="player-number">#9</div>
+                </a>
+            </div>
+        </div>
+
+        <div id="lista-jogadores"></div>
+
+        <!-- Seção de Membros -->
+        <div class="category-section">
+            <div class="category-title">Membros</div>
+            <div class="player-grid">
+                <a href="Membro1.html" class="player-card">
+                    <img src="JOGADORES/none.png" alt="Membro 1">
+                    <div class="player-name">José Ribas</div>
+                    <div class="player-number">Presidente</div>
+                </a>
+                <a href="Membro2.html" class="player-card">
+                    <img src="JOGADORES/none.png" alt="Membro 2">
+                    <div class="player-name">Jorge</div>
+                    <div class="player-number">Treinador</div>
+                </a>
+                <a href="Membro3.html" class="player-card">
+                    <img src="JOGADORES/none.png" alt="Membro 3">
+                    <div class="player-name">Sr. Branquinho</div>
+                    <div class="player-number">Delegado</div>
+                </a>
+                <!-- Adicione mais membros conforme necessário -->
+                
+                <div id="lista-membros"></div>
+
+
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Ilustre Caminha. Todos os direitos reservados. | <a href="politica_privacidade.html" class="menu-item">Política de Privacidade</a>
+    </footer>
+
+    <script>
+        function goToPlayerPage(playerId) {
+            // Redireciona para a página do jogador com um parâmetro de ID na URL
+            window.location.href = `player.html?id=${playerId}`;
+        }
+    </script>
+
+    <script>
+        const menuToggle = document.getElementById('menu-toggle');
+        const sideMenu = document.getElementById('side-menu');
+        const closeMenu = document.getElementById('close-menu');
+
+        menuToggle.addEventListener('click', () => {
+            sideMenu.classList.add('active');
+        });
+
+        closeMenu.addEventListener('click', () => {
+            sideMenu.classList.remove('active');
+        });
+    </script>
+
+    <script src="sr/script.js"></script>
+    
+</body>
+</html>

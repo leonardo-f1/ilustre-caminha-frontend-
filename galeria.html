@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galeria de Fotos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #111;
+            color: #f5f5f5;
+            font-family: 'Roboto', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .navbar {
+            background-color: #9B2226;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar .navbar-brand {
+            color: #FAC05E;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        .navbar .navbar-brand:hover {
+            color: #fff;
+        }
+        .navbar #go-back {
+            margin-right: 10px;
+            color: #9B2226;
+            background-color: #FAC05E;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        .navbar #go-back:hover {
+            background-color: #fff;
+            color: #9B2226;
+        }
+        .gallery-container {
+            padding: 20px;
+            flex: 1;
+        }
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        .gallery img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        .gallery img:hover {
+            transform: scale(1.05);
+        }
+        .admin-bar {
+            background-color: #222;
+            padding: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .admin-bar button {
+            margin-right: 10px;
+        }
+        .remove-btn {
+            display: block;
+            margin-top: 5px;
+            background-color: rgba(255, 0, 0, 0.8);
+            color: white;
+            border: none;
+            padding: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1050;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-image {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 10px;
+        }
+        footer {
+            background-color: #8B0000;
+            color: #fff;
+            text-align: center;
+            padding: 1rem;
+            margin-top: auto;
+        }
+        .footer-link {
+            color: #FAC267;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .footer-link:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a class="navbar-brand" href="#">Galeria de Fotos</a>
+        <div>
+            <button id="go-back" class="btn btn-light btn-sm">Voltar</button>
+            <i class="bi bi-pencil" id="admin-icon" style="font-size: 1.5rem; color: #FAC05E; cursor: pointer;"></i>
+        </div>
+    </nav>
+
+    <!-- Admin Bar -->
+    <div class="admin-bar" id="admin-bar">
+        <input type="file" id="file-input" accept="image/*" hidden>
+        <button id="add-image" class="btn btn-success btn-sm">Adicionar Imagem</button>
+        <button id="logout-admin" class="btn btn-danger btn-sm">Sair do Modo Admin</button>
+    </div>
+
+    <!-- Galeria -->
+    <div class="gallery-container">
+        <div class="gallery" id="gallery">
+            <!-- Fotos dinâmicas serão carregadas aqui -->
+        </div>
+    </div>
+
+    <!-- Modal para Ampliar Imagem -->
+    <div class="modal-overlay" id="modal-overlay">
+        <img src="" alt="Imagem Ampliada" class="modal-image" id="modal-image">
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Ilustre Caminha. Todos os direitos reservados. | 
+           <a href="politica_privacidade.html" class="footer-link">Política de Privacidade</a></p>
+    </footer>
+
+    <script>
+        const adminIcon = document.getElementById('admin-icon');
+        const adminBar = document.getElementById('admin-bar');
+        const addImageButton = document.getElementById('add-image');
+        const fileInput = document.getElementById('file-input');
+        const gallery = document.getElementById('gallery');
+        const logoutAdmin = document.getElementById('logout-admin');
+        const modalOverlay = document.getElementById('modal-overlay');
+        const modalImage = document.getElementById('modal-image');
+        const goBackButton = document.getElementById('go-back');
+
+        // Inicializar imagens padrão
+        let images = JSON.parse(localStorage.getItem('galleryImages')) || [
+            '1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg', '7.jpg', '8.jpg'
+        ];
+
+        // Renderizar galeria
+        function renderGallery() {
+            gallery.innerHTML = '';
+            images.forEach((src, index) => {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <img src="${src}" alt="Imagem ${index + 1}" class="gallery-img">
+                    ${adminBar.style.display === 'block' ? `<button class="remove-btn" data-index="${index}">Remover</button>` : ''}
+                `;
+                gallery.appendChild(div);
+            });
+
+            document.querySelectorAll('.gallery-img').forEach(img => {
+                img.addEventListener('click', () => {
+                    modalImage.src = img.src;
+                    modalOverlay.classList.add('active');
+                });
+            });
+
+            if (adminBar.style.display === 'block') {
+                document.querySelectorAll('.remove-btn').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const index = button.getAttribute('data-index');
+                        removeImage(index);
+                    });
+                });
+            }
+        }
+
+        function saveImages() {
+            localStorage.setItem('galleryImages', JSON.stringify(images));
+        }
+
+        function removeImage(index) {
+            images.splice(index, 1);
+            saveImages();
+            renderGallery();
+        }
+
+        addImageButton.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    images.push(e.target.result);
+                    saveImages();
+                    renderGallery();
+                };
+                reader.readAsDataURL(file);
+            } else {
+                alert('Selecione um arquivo de imagem válido.');
+            }
+        });
+
+        modalOverlay.addEventListener('click', () => {
+            modalOverlay.classList.remove('active');
+        });
+
+        adminIcon.addEventListener('click', () => {
+            const password = prompt('Digite a senha para acessar o modo administrador:');
+            if (password === 'admin123') {
+                adminBar.style.display = 'block';
+                renderGallery();
+                alert('Modo administrador ativado!');
+            } else {
+                alert('Senha incorreta!');
+            }
+        });
+
+        logoutAdmin.addEventListener('click', () => {
+            adminBar.style.display = 'none';
+            renderGallery();
+        });
+
+        goBackButton.addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+
+        renderGallery();
+    </script>
+</body>
+</html>

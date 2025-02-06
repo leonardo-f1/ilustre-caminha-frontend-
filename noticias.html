@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ilustre Caminha</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --navbar-height: 60px;
+            --logo-height: 50px;
+            --nav-link-margin: 15px;
+            --nav-link-font-size: 1rem;
+        }
+        body {
+            background-color: #000;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .navbar {
+            background-color: #8B0000;
+            height: var(--navbar-height);
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .navbar-brand {
+            margin-right: auto;
+        }
+        .navbar-brand img {
+            max-height: var(--logo-height);
+        }
+        .navbar-brand a {
+            display: inline-block;
+        }
+        .navbar-nav {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .navbar-nav .nav-item {
+            margin: 0 var(--nav-link-margin);
+        }
+        .navbar-nav .nav-link {
+            color: #fac267;
+            font-weight: bold;
+            font-size: var(--nav-link-font-size);
+        }
+        .navbar-nav .nav-link:hover {
+            color: #fff;
+        }
+        .navbar-icons {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background-color: #fac267;
+            height: var(--navbar-height);
+            padding: 0 20px;
+        }
+        .navbar-icons i {
+            color: #000;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        .navbar-icons i:hover {
+            color: #8B0000;
+        }
+
+        .admin-panel {
+            display: none;
+            background-color: #333;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+        .admin-panel.active {
+            display: block;
+        }
+        .admin-panel input, .admin-panel textarea {
+            margin-bottom: 10px;
+        }
+
+        .side-menu {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100%;
+            background-color: #fac267;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+            transition: right 0.3s ease;
+            z-index: 1050;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .side-menu.active {
+            right: 0;
+        }
+        .side-menu .close-btn {
+            font-size: 1.5rem;
+            color: #8B0000;
+            cursor: pointer;
+            align-self: flex-end;
+        }
+        .side-menu .menu-item {
+            margin: 20px 0;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #8B0000;
+            text-decoration: none;
+            display: block;
+        }
+        .side-menu .menu-item:hover {
+            color: #500000;
+        }
+        .side-menu .icons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 2px solid #8B0000;
+        }
+        .side-menu .icons i {
+            font-size: 1.5rem;
+            color: #8B0000;
+            cursor: pointer;
+        }
+        .side-menu .icons i:hover {
+            color: #500000;
+        }
+
+        .password-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            display: none;
+        }
+        .password-modal.active {
+            display: flex;
+        }
+        .password-modal .modal-content {
+            background-color: #222;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+        .password-modal .modal-content h5 {
+            color: #fac267;
+            margin-bottom: 20px;
+        }
+        .password-modal .modal-content input {
+            margin-bottom: 15px;
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 6px;
+        }
+        .password-modal .modal-content input:focus {
+            outline: 2px solid #fac267;
+        }
+        .password-modal .modal-content button {
+            background-color: #fac267;
+            border: none;
+            color: #000;
+            font-size: 1rem;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .password-modal .modal-content button:hover {
+            background-color: #ffd479;
+        }
+
+        .exit-admin {
+            margin-top: 20px;
+            background-color: #8B0000;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .exit-admin:hover {
+            background-color: #a83232;
+        }
+
+        /* Estilos do Footer */
+        footer {
+            background-color: #8B0000;
+            color: #fff;
+            text-align: center;
+            padding: 1rem;
+            margin-top: auto;
+        }
+        .footer-link {
+            color: #FAC267;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .footer-link:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <a class="navbar-brand" href="index.html">
+            <img src="logo.png" alt="Logo">
+        </a>
+        <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link" href="#">Ilustre Caminha</a></li>
+        </ul>
+        <div class="navbar-icons">
+            <i class="bi bi-pencil" id="admin-toggle"></i>
+            <i class="bi bi-list" id="menu-toggle"></i>
+        </div>
+    </div>
+
+    <!-- Notícias -->
+    <div class="container mt-4">
+        <div class="row justify-content-start" id="news-container">
+            <!-- Notícias serão adicionadas dinamicamente aqui -->
+        </div>
+    </div>
+
+    <!-- Painel de Administração -->
+    <div class="container admin-panel" id="admin-panel">
+        <h3 class="text-warning">Modo Administrador</h3>
+        <form id="news-form">
+            <input type="text" id="news-title" class="form-control" placeholder="Título da Notícia" required>
+            <textarea id="news-description" class="form-control" placeholder="Descrição da Notícia" required></textarea>
+            <input type="file" id="news-image" class="form-control" accept="image/*" required>
+            <button type="submit" class="btn btn-warning mt-2">Adicionar Notícia</button>
+        </form>
+        <button class="exit-admin" id="exit-admin">Sair do Modo Administrador</button>
+        <hr class="text-warning">
+        <p class="text-light">Clique em uma notícia para removê-la.</p>
+    </div>
+
+    <!-- Side Menu -->
+    <div class="side-menu" id="side-menu">
+        <span class="close-btn" id="close-menu">&times;</span>
+        <a href="index.html" class="menu-item">Página Principal</a>
+        <a href="Plantel.html" class="menu-item">Equipa</a>
+        <a href="classificacao.html" class="menu-item">Classificação</a>
+        <a href="galeria.html" class="menu-item">Galeria de Fotos</a>
+        <div class="icons">
+            <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer">
+                <i class="bi bi-facebook"></i>
+            </a>
+            <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer">
+                <i class="bi bi-instagram"></i>
+            </a>
+            <a href="https://www.youtube.com" target="_blank" rel="noopener noreferrer">
+                <i class="bi bi-youtube"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Password Modal -->
+    <div class="password-modal" id="password-modal">
+        <div class="modal-content">
+            <h5>Insira a senha para acessar o modo administrador</h5>
+            <input type="password" id="admin-password" placeholder="Senha">
+            <button id="password-submit">Entrar</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Ilustre Caminha. Todos os direitos reservados. | 
+           <a href="politica_privacidade.html" class="footer-link">Política de Privacidade</a></p>
+    </footer>
+
+    <script>
+        const adminToggle = document.getElementById('admin-toggle');
+        const adminPanel = document.getElementById('admin-panel');
+        const passwordModal = document.getElementById('password-modal');
+        const passwordSubmit = document.getElementById('password-submit');
+        const adminPassword = document.getElementById('admin-password');
+        const exitAdmin = document.getElementById('exit-admin');
+        const newsContainer = document.getElementById('news-container');
+        const newsForm = document.getElementById('news-form');
+        const newsImageInput = document.getElementById('news-image');
+        const menuToggle = document.getElementById('menu-toggle');
+        const sideMenu = document.getElementById('side-menu');
+        const closeMenu = document.getElementById('close-menu');
+
+        let isAdmin = false;
+        const correctPassword = "admin123";
+
+        const toggleAdminPanel = () => {
+            isAdmin = !isAdmin;
+            adminPanel.classList.toggle('active');
+        };
+
+        const saveNewsToLocalStorage = (news) => {
+            localStorage.setItem('news', JSON.stringify(news));
+        };
+
+        const loadNewsFromLocalStorage = () => {
+            const savedNews = localStorage.getItem('news');
+            return savedNews ? JSON.parse(savedNews) : [];
+        };
+
+        const renderNews = () => {
+            const newsList = loadNewsFromLocalStorage();
+            newsContainer.innerHTML = '';
+            newsList.forEach((news) => {
+                addNews(news.title, news.description, news.imageUrl, false);
+            });
+        };
+
+        adminToggle.addEventListener('click', () => {
+            passwordModal.classList.add('active');
+        });
+
+        passwordSubmit.addEventListener('click', () => {
+            if (adminPassword.value === correctPassword) {
+                passwordModal.classList.remove('active');
+                toggleAdminPanel();
+                adminPassword.value = "";
+            } else {
+                alert('Senha incorreta!');
+            }
+        });
+
+        exitAdmin.addEventListener('click', () => {
+            isAdmin = false;
+            adminPanel.classList.remove('active');
+        });
+
+        closeMenu.addEventListener('click', () => {
+            sideMenu.classList.remove('active');
+        });
+
+        menuToggle.addEventListener('click', () => {
+            sideMenu.classList.add('active');
+        });
+
+        const addNews = (title, description, imageUrl, save = true) => {
+            const newsCard = document.createElement('div');
+            newsCard.className = 'col-md-4 mb-4';
+            newsCard.innerHTML = `
+                <div class="card bg-dark text-light border-0">
+                    <img src="${imageUrl}" class="card-img-top" alt="Imagem da notícia">
+                    <div class="card-body">
+                        <h5 class="card-title text-warning">${title}</h5>
+                        <p class="card-text">${description}</p>
+                    </div>
+                </div>
+            `;
+            newsCard.addEventListener('click', () => {
+                if (isAdmin) {
+                    if (confirm('Deseja remover esta notícia?')) {
+                        newsCard.remove();
+                        const newsList = loadNewsFromLocalStorage();
+                        const updatedNewsList = newsList.filter(
+                            (news) => news.title !== title
+                        );
+                        saveNewsToLocalStorage(updatedNewsList);
+                    }
+                } else {
+                    alert('Você não tem permissão para remover notícias.');
+                }
+            });
+            newsContainer.prepend(newsCard);
+
+            if (save) {
+                const newsList = loadNewsFromLocalStorage();
+                newsList.unshift({ title, description, imageUrl });
+                saveNewsToLocalStorage(newsList);
+            }
+        };
+
+        newsForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const title = document.getElementById('news-title').value;
+            const description = document.getElementById('news-description').value;
+            const file = newsImageInput.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    addNews(title, description, e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+            
+
+          
+
+            newsForm.reset();
+        });
+
+        // Renderizar notícias salvas ao carregar a página
+        renderNews();
+    </script>
+
+    <script src="sr/script.js"></script>
+</body>
+</html>
